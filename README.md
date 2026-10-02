@@ -1,4 +1,4 @@
-# emerad-tools
+# emerald-tools
 
 ## Setup
 
