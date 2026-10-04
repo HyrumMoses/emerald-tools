@@ -30,6 +30,14 @@ fabricApi {
 	configureDataGeneration {
 		client = true
 	}
+
+	configureTests {
+		createSourceSet = true
+		modId = "emerald-tools-test"
+		enableGameTests = true
+		enableClientGameTests = false
+		eula = true
+	}
 }
 
 dependencies {

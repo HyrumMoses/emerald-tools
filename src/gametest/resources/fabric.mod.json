@@ -1,0 +1,15 @@
+{
+	"schemaVersion": 1,
+	"id": "emerald-tools-test",
+	"version": "1.0.0",
+	"name": "Emerald Tools Tests",
+	"environment": "*",
+	"entrypoints": {
+		"fabric-gametest": [
+			"com.emeraldtools.test.EmeraldToolsGameTests"
+		]
+	},
+	"depends": {
+		"emerald-tools": "*"
+	}
+}
