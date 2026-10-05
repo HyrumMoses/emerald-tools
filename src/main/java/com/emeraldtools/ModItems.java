@@ -1,5 +1,6 @@
 package com.emeraldtools;
 
+import java.util.Map;
 import java.util.function.Function;
 
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
@@ -8,6 +9,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.AxeItem;
@@ -17,6 +19,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.ToolMaterial;
+import net.minecraft.world.item.equipment.ArmorMaterial;
+import net.minecraft.world.item.equipment.ArmorMaterials;
+import net.minecraft.world.item.equipment.ArmorType;
+import net.minecraft.world.item.equipment.EquipmentAsset;
+import net.minecraft.world.item.equipment.EquipmentAssets;
 
 public final class ModItems {
 	public static final TagKey<Item> EMERALD_TOOL_MATERIALS = TagKey.create(Registries.ITEM, id("emerald_tool_materials"));
@@ -38,6 +45,23 @@ public final class ModItems {
 	public static final Item EMERALD_AXE = register("emerald_axe", p -> new AxeItem(EMERALD, 11.0F, -3.0F, p), new Item.Properties());
 	public static final Item EMERALD_HOE = register("emerald_hoe", p -> new HoeItem(EMERALD, -5.0F, 0.0F, p), new Item.Properties());
 
+	public static final TagKey<Item> REPAIRS_EMERALD_ARMOR = TagKey.create(Registries.ITEM, id("repairs_emerald_armor"));
+	public static final ResourceKey<EquipmentAsset> EMERALD_ARMOR_ASSET = ResourceKey.create(EquipmentAssets.ROOT_ID, id("emerald"));
+
+	// Compared to ArmorMaterials.DIAMOND: twice the armor points and toughness.
+	// Same enchantability, knockback resistance (none) and equip sound as diamond.
+	// Durability is set per piece in armor() to exactly half of the diamond piece.
+	public static final ArmorMaterial EMERALD_ARMOR_MATERIAL = new ArmorMaterial(
+		ArmorMaterials.DIAMOND.durability() / 2,
+		Map.of(ArmorType.BOOTS, 6, ArmorType.LEGGINGS, 12, ArmorType.CHESTPLATE, 16, ArmorType.HELMET, 6, ArmorType.BODY, 22),
+		10, SoundEvents.ARMOR_EQUIP_DIAMOND, 4.0F, 0.0F, REPAIRS_EMERALD_ARMOR, EMERALD_ARMOR_ASSET
+	);
+
+	public static final Item EMERALD_HELMET = armor("emerald_helmet", ArmorType.HELMET);
+	public static final Item EMERALD_CHESTPLATE = armor("emerald_chestplate", ArmorType.CHESTPLATE);
+	public static final Item EMERALD_LEGGINGS = armor("emerald_leggings", ArmorType.LEGGINGS);
+	public static final Item EMERALD_BOOTS = armor("emerald_boots", ArmorType.BOOTS);
+
 	private ModItems() {
 	}
 
@@ -48,7 +72,13 @@ public final class ModItems {
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.COMBAT).register(output -> {
 			output.insertAfter(Items.DIAMOND_SWORD, EMERALD_SWORD);
 			output.insertAfter(Items.DIAMOND_AXE, EMERALD_AXE);
+			output.insertAfter(Items.DIAMOND_BOOTS, EMERALD_HELMET, EMERALD_CHESTPLATE, EMERALD_LEGGINGS, EMERALD_BOOTS);
 		});
+	}
+
+	private static Item armor(String name, ArmorType type) {
+		int durability = type.getDurability(ArmorMaterials.DIAMOND.durability()) / 2;
+		return register(name, Item::new, new Item.Properties().humanoidArmor(EMERALD_ARMOR_MATERIAL, type).durability(durability));
 	}
 
 	private static Item register(String name, Function<Item.Properties, Item> factory, Item.Properties properties) {

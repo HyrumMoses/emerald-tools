@@ -1,0 +1,19 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "emerald-tools:emerald"
+      }
+    ],
+    "humanoid_baby": [
+      {
+        "texture": "emerald-tools:emerald"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "emerald-tools:emerald"
+      }
+    ]
+  }
+}
