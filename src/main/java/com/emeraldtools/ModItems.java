@@ -3,6 +3,7 @@ package com.emeraldtools;
 import java.util.Map;
 import java.util.function.Function;
 
+import com.emeraldtools.item.EnderArrowItem;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -24,6 +25,7 @@ import net.minecraft.world.item.equipment.ArmorMaterials;
 import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.item.equipment.EquipmentAsset;
 import net.minecraft.world.item.equipment.EquipmentAssets;
+import net.minecraft.world.level.block.DispenserBlock;
 
 public final class ModItems {
 	public static final TagKey<Item> EMERALD_TOOL_MATERIALS = TagKey.create(Registries.ITEM, id("emerald_tool_materials"));
@@ -62,6 +64,9 @@ public final class ModItems {
 	public static final Item EMERALD_LEGGINGS = armor("emerald_leggings", ArmorType.LEGGINGS);
 	public static final Item EMERALD_BOOTS = armor("emerald_boots", ArmorType.BOOTS);
 
+	// Shoots from a bow or crossbow and teleports the shooter to wherever it lands.
+	public static final Item ENDER_ARROW = register("ender_arrow", EnderArrowItem::new, new Item.Properties());
+
 	private ModItems() {
 	}
 
@@ -73,7 +78,9 @@ public final class ModItems {
 			output.insertAfter(Items.DIAMOND_SWORD, EMERALD_SWORD);
 			output.insertAfter(Items.DIAMOND_AXE, EMERALD_AXE);
 			output.insertAfter(Items.DIAMOND_BOOTS, EMERALD_HELMET, EMERALD_CHESTPLATE, EMERALD_LEGGINGS, EMERALD_BOOTS);
+			output.insertAfter(Items.SPECTRAL_ARROW, ENDER_ARROW);
 		});
+		DispenserBlock.registerProjectileBehavior(ENDER_ARROW);
 	}
 
 	private static Item armor(String name, ArmorType type) {

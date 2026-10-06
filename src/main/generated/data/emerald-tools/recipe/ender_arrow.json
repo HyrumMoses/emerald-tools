@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "equipment",
+  "ingredients": [
+    "minecraft:arrow",
+    "minecraft:ender_pearl"
+  ],
+  "result": {
+    "id": "emerald-tools:ender_arrow"
+  }
+}
