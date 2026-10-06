@@ -45,7 +45,7 @@ In creative mode, the ender arrow is next to the spectral arrow in the Combat ta
 
 ## Crafting and repair
 
-Every item uses the same recipe shape as its diamond counterpart, with emeralds in place of diamonds. Recipes unlock in the recipe book once you pick up an emerald.
+Every tool and armor piece uses the same recipe shape as its diamond counterpart, with emeralds in place of diamonds. Recipes unlock in the recipe book once you pick up an emerald.
 
 Tools and armor are repaired with emeralds in an anvil, or by combining two damaged items of the same kind.
 
