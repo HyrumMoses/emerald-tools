@@ -13,7 +13,11 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider;
 import net.minecraft.client.data.models.BlockModelGenerators;
 import net.minecraft.client.data.models.ItemModelGenerators;
 import net.minecraft.client.data.models.model.ModelTemplates;
+import net.minecraft.client.resources.model.EquipmentClientInfo;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.data.CachedOutput;
+import net.minecraft.data.DataProvider;
+import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
@@ -29,6 +33,7 @@ public class EmeraldToolsDataGenerator implements DataGeneratorEntrypoint {
 		pack.addProvider(RecipeGenerator::new);
 		pack.addProvider(ItemTagGenerator::new);
 		pack.addProvider(EnglishLanguageProvider::new);
+		pack.addProvider(EquipmentAssetGenerator::new);
 	}
 
 	private static class ModelProvider extends FabricModelProvider {
@@ -47,10 +52,14 @@ public class EmeraldToolsDataGenerator implements DataGeneratorEntrypoint {
 			itemModelGenerators.generateFlatItem(ModItems.EMERALD_PICKAXE, ModelTemplates.FLAT_HANDHELD_ITEM);
 			itemModelGenerators.generateFlatItem(ModItems.EMERALD_AXE, ModelTemplates.FLAT_HANDHELD_ITEM);
 			itemModelGenerators.generateFlatItem(ModItems.EMERALD_HOE, ModelTemplates.FLAT_HANDHELD_ITEM);
+			itemModelGenerators.generateTrimmableItem(ModItems.EMERALD_HELMET, ModItems.EMERALD_ARMOR_ASSET, ItemModelGenerators.TRIM_PREFIX_HELMET, false);
+			itemModelGenerators.generateTrimmableItem(ModItems.EMERALD_CHESTPLATE, ModItems.EMERALD_ARMOR_ASSET, ItemModelGenerators.TRIM_PREFIX_CHESTPLATE, false);
+			itemModelGenerators.generateTrimmableItem(ModItems.EMERALD_LEGGINGS, ModItems.EMERALD_ARMOR_ASSET, ItemModelGenerators.TRIM_PREFIX_LEGGINGS, false);
+			itemModelGenerators.generateTrimmableItem(ModItems.EMERALD_BOOTS, ModItems.EMERALD_ARMOR_ASSET, ItemModelGenerators.TRIM_PREFIX_BOOTS, false);
 		}
 	}
 
-	// Same shapes as the diamond tool recipes, with emeralds in place of diamonds.
+	// Same shapes as the diamond tool and armor recipes, with emeralds in place of diamonds.
 	private static class RecipeGenerator extends FabricRecipeProvider {
 		RecipeGenerator(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
 			super(output, registries);
@@ -66,6 +75,19 @@ public class EmeraldToolsDataGenerator implements DataGeneratorEntrypoint {
 					tool(RecipeCategory.TOOLS, ModItems.EMERALD_PICKAXE, "XXX", " # ", " # ");
 					tool(RecipeCategory.TOOLS, ModItems.EMERALD_AXE, "XX", "X#", " #");
 					tool(RecipeCategory.TOOLS, ModItems.EMERALD_HOE, "XX", " #", " #");
+					armor(ModItems.EMERALD_HELMET, "XXX", "X X");
+					armor(ModItems.EMERALD_CHESTPLATE, "X X", "XXX", "XXX");
+					armor(ModItems.EMERALD_LEGGINGS, "XXX", "X X", "X X");
+					armor(ModItems.EMERALD_BOOTS, "X X", "X X");
+				}
+
+				private void armor(Item result, String... pattern) {
+					var builder = this.shaped(RecipeCategory.COMBAT, result)
+						.define('X', Items.EMERALD);
+					for (String row : pattern) {
+						builder.pattern(row);
+					}
+					builder.unlockedBy("has_emerald", this.has(Items.EMERALD)).save(this.output);
 				}
 
 				private void tool(RecipeCategory category, Item result, String... pattern) {
@@ -101,6 +123,14 @@ public class EmeraldToolsDataGenerator implements DataGeneratorEntrypoint {
 			valueLookupBuilder(ItemTags.AXES).add(ModItems.EMERALD_AXE);
 			valueLookupBuilder(ItemTags.HOES).add(ModItems.EMERALD_HOE);
 			valueLookupBuilder(ItemTags.CLUSTER_MAX_HARVESTABLES).add(ModItems.EMERALD_PICKAXE);
+			valueLookupBuilder(ModItems.REPAIRS_EMERALD_ARMOR).add(Items.EMERALD);
+			// Vanilla armor tags control which enchantments apply and which armor can be trimmed.
+			valueLookupBuilder(ItemTags.HEAD_ARMOR).add(ModItems.EMERALD_HELMET);
+			valueLookupBuilder(ItemTags.CHEST_ARMOR).add(ModItems.EMERALD_CHESTPLATE);
+			valueLookupBuilder(ItemTags.LEG_ARMOR).add(ModItems.EMERALD_LEGGINGS);
+			valueLookupBuilder(ItemTags.FOOT_ARMOR).add(ModItems.EMERALD_BOOTS);
+			valueLookupBuilder(ItemTags.TRIMMABLE_ARMOR)
+				.add(ModItems.EMERALD_HELMET, ModItems.EMERALD_CHESTPLATE, ModItems.EMERALD_LEGGINGS, ModItems.EMERALD_BOOTS);
 		}
 	}
 
@@ -117,6 +147,33 @@ public class EmeraldToolsDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add(ModItems.EMERALD_AXE, "Emerald Axe");
 			translationBuilder.add(ModItems.EMERALD_HOE, "Emerald Hoe");
 			translationBuilder.add(ModItems.EMERALD_TOOL_MATERIALS, "Emerald Tool Materials");
+			translationBuilder.add(ModItems.EMERALD_HELMET, "Emerald Helmet");
+			translationBuilder.add(ModItems.EMERALD_CHESTPLATE, "Emerald Chestplate");
+			translationBuilder.add(ModItems.EMERALD_LEGGINGS, "Emerald Leggings");
+			translationBuilder.add(ModItems.EMERALD_BOOTS, "Emerald Boots");
+			translationBuilder.add(ModItems.REPAIRS_EMERALD_ARMOR, "Repairs Emerald Armor");
+		}
+	}
+
+	// Tells the client which textures to draw for worn emerald armor.
+	private static class EquipmentAssetGenerator implements DataProvider {
+		private final PackOutput.PathProvider pathProvider;
+
+		EquipmentAssetGenerator(FabricPackOutput output) {
+			this.pathProvider = output.createPathProvider(PackOutput.Target.RESOURCE_PACK, "equipment");
+		}
+
+		@Override
+		public CompletableFuture<?> run(CachedOutput output) {
+			EquipmentClientInfo emerald = EquipmentClientInfo.builder()
+				.addHumanoidLayers(ModItems.EMERALD_ARMOR_ASSET.identifier())
+				.build();
+			return DataProvider.saveStable(output, EquipmentClientInfo.CODEC, emerald, pathProvider.json(ModItems.EMERALD_ARMOR_ASSET));
+		}
+
+		@Override
+		public String getName() {
+			return "Emerald Tools Equipment Assets";
 		}
 	}
 }
