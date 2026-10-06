@@ -35,9 +35,17 @@ Enchantability (10), knockback resistance (none) and the equip sound are the sam
 
 A full emerald set adds up to 40 armor points, but Minecraft caps a player's armor at 30, and its damage formula only counts up to 20. So a full set protects noticeably more than full diamond (20 points), but not twice as much.
 
+## Ender arrow
+
+Craft an arrow and an ender pearl together (shapeless) to get one ender arrow. Shoot it from a bow or crossbow, and you teleport to wherever it lands, whether it hits a block or a mob. Like an ender pearl, the teleport deals 5 damage and resets your fall distance. The arrow is used up when it lands.
+
+If you're in a different dimension when the arrow lands, nothing happens. Ender arrows fired from a dispenser have no shooter, so they just land and break.
+
+In creative mode, the ender arrow is next to the spectral arrow in the Combat tab.
+
 ## Crafting and repair
 
-Every item uses the same recipe shape as its diamond counterpart, with emeralds in place of diamonds. Recipes unlock in the recipe book once you pick up an emerald.
+Every tool and armor piece uses the same recipe shape as its diamond counterpart, with emeralds in place of diamonds. Recipes unlock in the recipe book once you pick up an emerald.
 
 Tools and armor are repaired with emeralds in an anvil, or by combining two damaged items of the same kind.
 
@@ -56,7 +64,7 @@ In creative mode, the shovel, pickaxe, axe and hoe are next to the diamond tools
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/`. `build` also runs the game tests, which check every tool and armor piece against its diamond counterpart.
+The mod jar ends up in `build/libs/`. `build` also runs the game tests, which check every tool and armor piece against its diamond counterpart and check that the ender arrow crafts, fires and teleports.
 
 Models, recipes, tags, translations and the worn-armor definition are generated into `src/main/generated/`. After changing an item, regenerate them with:
 

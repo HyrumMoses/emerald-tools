@@ -6,7 +6,8 @@
 	"environment": "*",
 	"entrypoints": {
 		"fabric-gametest": [
-			"com.emeraldtools.test.EmeraldToolsGameTests"
+			"com.emeraldtools.test.EmeraldToolsGameTests",
+			"com.emeraldtools.test.EnderArrowGameTests"
 		]
 	},
 	"depends": {
