@@ -20,5 +20,6 @@ public class EmeraldTools implements ModInitializer {
 		// Proceed with mild caution.
 
 		ModItems.initialize();
+		ModEntities.initialize();
 	}
 }

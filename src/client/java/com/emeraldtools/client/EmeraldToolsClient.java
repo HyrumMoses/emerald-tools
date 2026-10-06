@@ -1,10 +1,16 @@
 package com.emeraldtools.client;
 
+import com.emeraldtools.ModEntities;
+import com.emeraldtools.client.render.EmeraldGolemModel;
+import com.emeraldtools.client.render.EmeraldGolemRenderer;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.ModelLayerRegistry;
 
 public class EmeraldToolsClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
-		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
+		ModelLayerRegistry.registerModelLayer(EmeraldGolemRenderer.LAYER, EmeraldGolemModel::createBodyLayer);
+		EntityRendererRegistry.register(ModEntities.EMERALD_GOLEM, EmeraldGolemRenderer::new);
 	}
 }

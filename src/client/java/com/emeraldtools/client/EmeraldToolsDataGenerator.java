@@ -2,11 +2,13 @@ package com.emeraldtools.client;
 
 import java.util.concurrent.CompletableFuture;
 
+import com.emeraldtools.ModEntities;
 import com.emeraldtools.ModItems;
 import net.fabricmc.fabric.api.client.datagen.v1.provider.FabricModelProvider;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 import net.fabricmc.fabric.api.datagen.v1.FabricPackOutput;
+import net.fabricmc.fabric.api.datagen.v1.provider.FabricEntityLootSubProvider;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagsProvider;
@@ -24,6 +26,13 @@ import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 
 public class EmeraldToolsDataGenerator implements DataGeneratorEntrypoint {
 	@Override
@@ -34,6 +43,7 @@ public class EmeraldToolsDataGenerator implements DataGeneratorEntrypoint {
 		pack.addProvider(ItemTagGenerator::new);
 		pack.addProvider(EnglishLanguageProvider::new);
 		pack.addProvider(EquipmentAssetGenerator::new);
+		pack.addProvider(EntityLootGenerator::new);
 	}
 
 	private static class ModelProvider extends FabricModelProvider {
@@ -152,6 +162,7 @@ public class EmeraldToolsDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add(ModItems.EMERALD_LEGGINGS, "Emerald Leggings");
 			translationBuilder.add(ModItems.EMERALD_BOOTS, "Emerald Boots");
 			translationBuilder.add(ModItems.REPAIRS_EMERALD_ARMOR, "Repairs Emerald Armor");
+			translationBuilder.add(ModEntities.EMERALD_GOLEM, "Emerald Golem");
 		}
 	}
 
@@ -174,6 +185,24 @@ public class EmeraldToolsDataGenerator implements DataGeneratorEntrypoint {
 		@Override
 		public String getName() {
 			return "Emerald Tools Equipment Assets";
+		}
+	}
+
+	// Like the iron golem's drops: 0-2 poppies, plus 3-5 emeralds in place of iron ingots.
+	private static class EntityLootGenerator extends FabricEntityLootSubProvider {
+		EntityLootGenerator(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+			super(output, registries);
+		}
+
+		@Override
+		public void generate() {
+			add(ModEntities.EMERALD_GOLEM, LootTable.lootTable()
+				.withPool(LootPool.lootPool()
+					.setRolls(ConstantValue.exactly(1.0F))
+					.add(LootItem.lootTableItem(Blocks.POPPY).apply(SetItemCountFunction.setCount(UniformGenerator.between(0.0F, 2.0F)))))
+				.withPool(LootPool.lootPool()
+					.setRolls(ConstantValue.exactly(1.0F))
+					.add(LootItem.lootTableItem(Items.EMERALD).apply(SetItemCountFunction.setCount(UniformGenerator.between(3.0F, 5.0F))))));
 		}
 	}
 }

@@ -3,7 +3,7 @@
 	"id": "emerald-tools",
 	"version": "${version}",
 	"name": "Emerald Tools",
-	"description": "Emerald tools and armor. They hit harder, mine faster and protect better than diamond, but last half as long.",
+	"description": "Emerald tools, armor and an emerald golem. They hit harder, mine faster and protect better than diamond, but last half as long.",
 	"authors": [
 		"Hyrum66"
 	],
