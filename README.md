@@ -1,6 +1,6 @@
 # Emerald Tools
 
-A Fabric mod for Minecraft 26.1.2 that turns emeralds into a full set of tools and armor. Emerald gear hits harder, mines faster and protects better than diamond, but wears out in half the time.
+A Fabric mod for Minecraft 26.1.2 that turns emeralds into a full set of tools and armor, plus an emerald golem. Emerald gear hits harder, mines faster and protects better than diamond, but wears out in half the time.
 
 ## Tools
 
@@ -43,6 +43,18 @@ If you're in a different dimension when the arrow lands, nothing happens. Ender 
 
 In creative mode, the ender arrow is next to the spectral arrow in the Combat tab.
 
+## Emerald golem
+
+Build it like an iron golem, with emerald blocks: a T of four emerald blocks with a carved pumpkin or jack o'lantern on top. A dispenser can place the pumpkin too.
+
+The emerald golem is 4 blocks tall, with thicker arms than the iron golem. Compared to the iron golem it:
+
+- deals **twice the attack damage** (30 vs. 15)
+- moves **twice as fast** (movement speed 0.5 vs. 0.25)
+- attacks **creepers** as well as every monster an iron golem attacks
+
+Health (100), knockback resistance and village behavior are the same as the iron golem, and like a player-built iron golem it never attacks players unless they hit it first. Feed it an emerald to heal it by 25. When it dies it drops 3-5 emeralds and up to 2 poppies.
+
 ## Crafting and repair
 
 Every tool and armor piece uses the same recipe shape as its diamond counterpart, with emeralds in place of diamonds. Recipes unlock in the recipe book once you pick up an emerald.
@@ -64,9 +76,9 @@ In creative mode, the shovel, pickaxe, axe and hoe are next to the diamond tools
 ./gradlew build
 ```
 
-The mod jar ends up in `build/libs/`. `build` also runs the game tests, which check every tool and armor piece against its diamond counterpart and check that the ender arrow crafts, fires and teleports.
+The mod jar ends up in `build/libs/`. `build` also runs the game tests, which check every tool and armor piece against its diamond counterpart, check that the ender arrow crafts, fires and teleports, and check the emerald golem's stats, summoning and targeting against the iron golem.
 
-Models, recipes, tags, translations and the worn-armor definition are generated into `src/main/generated/`. After changing an item, regenerate them with:
+Models, recipes, tags, translations, the golem's loot table and the worn-armor definition are generated into `src/main/generated/`. After changing an item, regenerate them with:
 
 ```sh
 ./gradlew runDatagen

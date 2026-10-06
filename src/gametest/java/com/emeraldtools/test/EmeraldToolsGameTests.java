@@ -1,13 +1,20 @@
 package com.emeraldtools.test;
 
+import com.emeraldtools.ModEntities;
 import com.emeraldtools.ModItems;
+import com.emeraldtools.entity.EmeraldGolem;
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.animal.golem.IronGolem;
+import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -16,7 +23,8 @@ import net.minecraft.world.item.enchantment.Enchantable;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
-// Compares each emerald tool and armor piece against its diamond counterpart.
+// Compares each emerald tool and armor piece against its diamond counterpart,
+// and the emerald golem against the iron golem.
 public class EmeraldToolsGameTests {
 	@GameTest
 	public void sword(GameTestHelper helper) {
@@ -72,6 +80,59 @@ public class EmeraldToolsGameTests {
 	public void boots(GameTestHelper helper) {
 		assertArmorStats(helper, ModItems.EMERALD_BOOTS, Items.DIAMOND_BOOTS, EquipmentSlot.FEET);
 		helper.succeed();
+	}
+
+	@GameTest
+	public void emeraldGolemStats(GameTestHelper helper) {
+		EmeraldGolem emerald = helper.spawnWithNoFreeWill(ModEntities.EMERALD_GOLEM, new BlockPos(2, 1, 2));
+		IronGolem iron = helper.spawnWithNoFreeWill(EntityType.IRON_GOLEM, new BlockPos(5, 1, 5));
+
+		assertEqual(helper, "height", 4.0, emerald.getBbHeight());
+		assertEqual(helper, "max health", iron.getAttributeValue(Attributes.MAX_HEALTH), emerald.getAttributeValue(Attributes.MAX_HEALTH));
+		assertEqual(helper, "knockback resistance", iron.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE),
+			emerald.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE));
+		assertEqual(helper, "step height", iron.getAttributeValue(Attributes.STEP_HEIGHT), emerald.getAttributeValue(Attributes.STEP_HEIGHT));
+		assertEqual(helper, "attack damage", 2 * iron.getAttributeValue(Attributes.ATTACK_DAMAGE), emerald.getAttributeValue(Attributes.ATTACK_DAMAGE));
+		assertEqual(helper, "movement speed", 2 * iron.getAttributeValue(Attributes.MOVEMENT_SPEED), emerald.getAttributeValue(Attributes.MOVEMENT_SPEED));
+		helper.succeed();
+	}
+
+	// A pumpkin on top of a T of emerald blocks builds a player-created emerald golem and uses up the blocks.
+	@GameTest
+	public void summonEmeraldGolem(GameTestHelper helper) {
+		BlockPos bottom = new BlockPos(3, 1, 3);
+		BlockPos[] pattern = {bottom, bottom.above(), bottom.above().west(), bottom.above().east()};
+		for (BlockPos pos : pattern) {
+			helper.setBlock(pos, Blocks.EMERALD_BLOCK);
+		}
+		helper.setBlock(bottom.above(2), Blocks.CARVED_PUMPKIN);
+
+		helper.succeedWhen(() -> {
+			helper.assertEntityPresent(ModEntities.EMERALD_GOLEM);
+			helper.assertEntityNotPresent(EntityType.IRON_GOLEM);
+			helper.assertTrue(helper.getEntities(ModEntities.EMERALD_GOLEM).getFirst().isPlayerCreated(), "Summoned golem should be player-created");
+			for (BlockPos pos : pattern) {
+				helper.assertBlockPresent(Blocks.AIR, pos);
+			}
+			helper.assertBlockPresent(Blocks.AIR, bottom.above(2));
+		});
+	}
+
+	// Iron golems leave creepers alone; emerald golems go after them along with other monsters.
+	@GameTest(maxTicks = 200)
+	public void emeraldGolemAttacksCreepers(GameTestHelper helper) {
+		EmeraldGolem golem = helper.spawn(ModEntities.EMERALD_GOLEM, new BlockPos(2, 1, 2));
+		IronGolem iron = helper.spawnWithNoFreeWill(EntityType.IRON_GOLEM, new BlockPos(6, 1, 6));
+		Creeper creeper = helper.spawnWithNoFreeWill(EntityType.CREEPER, new BlockPos(6, 1, 2));
+		Zombie zombie = helper.spawnWithNoFreeWill(EntityType.ZOMBIE, new BlockPos(2, 1, 6));
+
+		helper.assertFalse(iron.canAttack(creeper), "Iron golem should not attack creepers");
+		helper.assertTrue(golem.canAttack(creeper), "Emerald golem should attack creepers");
+		helper.assertTrue(golem.canAttack(zombie), "Emerald golem should attack zombies");
+		zombie.discard();
+
+		helper.succeedWhen(() -> helper.assertTrue(golem.getTarget() == creeper || creeper.getLastHurtByMob() == golem,
+			"Emerald golem should target the creeper"));
 	}
 
 	private static void assertArmorStats(GameTestHelper helper, Item emerald, Item diamond, EquipmentSlot slot) {

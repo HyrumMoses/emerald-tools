@@ -1,6 +1,8 @@
 package com.emeraldtools;
 
+import com.emeraldtools.entity.EmeraldGolem;
 import com.emeraldtools.entity.EnderArrow;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -22,10 +24,17 @@ public final class ModEntities {
 			.updateInterval(20)
 	);
 
+	// 4 blocks tall. The iron golem is 1.4 x 2.7, so the width is scaled up by the same ~1.5x.
+	public static final EntityType<EmeraldGolem> EMERALD_GOLEM = register(
+		"emerald_golem",
+		EntityType.Builder.of(EmeraldGolem::new, MobCategory.MISC).sized(2.1F, 4.0F).clientTrackingRange(10)
+	);
+
 	private ModEntities() {
 	}
 
 	public static void initialize() {
+		FabricDefaultAttributeRegistry.register(EMERALD_GOLEM, EmeraldGolem.createAttributes());
 	}
 
 	private static <T extends Entity> EntityType<T> register(String name, EntityType.Builder<T> builder) {
