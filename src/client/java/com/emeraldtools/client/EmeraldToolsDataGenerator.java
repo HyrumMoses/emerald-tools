@@ -23,6 +23,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -41,6 +42,7 @@ public class EmeraldToolsDataGenerator implements DataGeneratorEntrypoint {
 		pack.addProvider(ModelProvider::new);
 		pack.addProvider(RecipeGenerator::new);
 		pack.addProvider(ItemTagGenerator::new);
+		pack.addProvider(EntityTypeTagGenerator::new);
 		pack.addProvider(EnglishLanguageProvider::new);
 		pack.addProvider(EquipmentAssetGenerator::new);
 		pack.addProvider(EntityLootGenerator::new);
@@ -66,6 +68,7 @@ public class EmeraldToolsDataGenerator implements DataGeneratorEntrypoint {
 			itemModelGenerators.generateTrimmableItem(ModItems.EMERALD_CHESTPLATE, ModItems.EMERALD_ARMOR_ASSET, ItemModelGenerators.TRIM_PREFIX_CHESTPLATE, false);
 			itemModelGenerators.generateTrimmableItem(ModItems.EMERALD_LEGGINGS, ModItems.EMERALD_ARMOR_ASSET, ItemModelGenerators.TRIM_PREFIX_LEGGINGS, false);
 			itemModelGenerators.generateTrimmableItem(ModItems.EMERALD_BOOTS, ModItems.EMERALD_ARMOR_ASSET, ItemModelGenerators.TRIM_PREFIX_BOOTS, false);
+			itemModelGenerators.generateFlatItem(ModItems.ENDER_ARROW, ModelTemplates.FLAT_ITEM);
 		}
 	}
 
@@ -89,6 +92,11 @@ public class EmeraldToolsDataGenerator implements DataGeneratorEntrypoint {
 					armor(ModItems.EMERALD_CHESTPLATE, "X X", "XXX", "XXX");
 					armor(ModItems.EMERALD_LEGGINGS, "XXX", "X X", "X X");
 					armor(ModItems.EMERALD_BOOTS, "X X", "X X");
+					this.shapeless(RecipeCategory.COMBAT, ModItems.ENDER_ARROW)
+						.requires(Items.ARROW)
+						.requires(Items.ENDER_PEARL)
+						.unlockedBy("has_ender_pearl", this.has(Items.ENDER_PEARL))
+						.save(this.output);
 				}
 
 				private void armor(Item result, String... pattern) {
@@ -141,6 +149,20 @@ public class EmeraldToolsDataGenerator implements DataGeneratorEntrypoint {
 			valueLookupBuilder(ItemTags.FOOT_ARMOR).add(ModItems.EMERALD_BOOTS);
 			valueLookupBuilder(ItemTags.TRIMMABLE_ARMOR)
 				.add(ModItems.EMERALD_HELMET, ModItems.EMERALD_CHESTPLATE, ModItems.EMERALD_LEGGINGS, ModItems.EMERALD_BOOTS);
+			// Bows and crossbows only accept items in the arrows tag.
+			valueLookupBuilder(ItemTags.ARROWS).add(ModItems.ENDER_ARROW);
+		}
+	}
+
+	private static class EntityTypeTagGenerator extends FabricTagsProvider.EntityTypeTagsProvider {
+		EntityTypeTagGenerator(FabricPackOutput output, CompletableFuture<HolderLookup.Provider> registries) {
+			super(output, registries);
+		}
+
+		@Override
+		protected void addTags(HolderLookup.Provider registries) {
+			// Lets the ender arrow trigger the same blocks and behaviors as vanilla arrows.
+			valueLookupBuilder(EntityTypeTags.ARROWS).add(ModEntities.ENDER_ARROW);
 		}
 	}
 
@@ -162,6 +184,8 @@ public class EmeraldToolsDataGenerator implements DataGeneratorEntrypoint {
 			translationBuilder.add(ModItems.EMERALD_LEGGINGS, "Emerald Leggings");
 			translationBuilder.add(ModItems.EMERALD_BOOTS, "Emerald Boots");
 			translationBuilder.add(ModItems.REPAIRS_EMERALD_ARMOR, "Repairs Emerald Armor");
+			translationBuilder.add(ModItems.ENDER_ARROW, "Ender Arrow");
+			translationBuilder.add(ModEntities.ENDER_ARROW, "Ender Arrow");
 			translationBuilder.add(ModEntities.EMERALD_GOLEM, "Emerald Golem");
 		}
 	}

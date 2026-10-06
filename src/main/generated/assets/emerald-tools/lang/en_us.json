@@ -1,5 +1,6 @@
 {
   "entity.emerald-tools.emerald_golem": "Emerald Golem",
+  "entity.emerald-tools.ender_arrow": "Ender Arrow",
   "item.emerald-tools.emerald_axe": "Emerald Axe",
   "item.emerald-tools.emerald_boots": "Emerald Boots",
   "item.emerald-tools.emerald_chestplate": "Emerald Chestplate",
@@ -9,6 +10,7 @@
   "item.emerald-tools.emerald_pickaxe": "Emerald Pickaxe",
   "item.emerald-tools.emerald_shovel": "Emerald Shovel",
   "item.emerald-tools.emerald_sword": "Emerald Sword",
+  "item.emerald-tools.ender_arrow": "Ender Arrow",
   "tag.item.emerald-tools.emerald_tool_materials": "Emerald Tool Materials",
   "tag.item.emerald-tools.repairs_emerald_armor": "Repairs Emerald Armor"
 }
