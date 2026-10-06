@@ -2,14 +2,14 @@
 	"schemaVersion": 1,
 	"id": "emerald-tools",
 	"version": "${version}",
-	"name": "emerald-tools",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"name": "Emerald Tools",
+	"description": "Emerald tools and armor. They hit harder, mine faster and protect better than diamond, but last half as long.",
 	"authors": [
-		"Me!"
+		"Hyrum66"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/HyrumMoses/emerald-tools",
+		"sources": "https://github.com/HyrumMoses/emerald-tools"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/emerald-tools/icon.png",
